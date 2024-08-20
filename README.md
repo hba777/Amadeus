@@ -1,16 +1,18 @@
-# chatbot_ai
+# ChatBot AI
 
-A ChatBot with pyTorch
+A ChatBot with Flutter and Gemini API.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project aims at making a chatbot using the Gemini API. It uses Getx and Bloc for state management options. The image capabilities are only
+in the GetX variant. It uses the Gemini package for image response generation.
+The APK is in this path ./ChatBot_AI\build\app\outputs\flutter-apk. Use the release version.
 
-A few resources to get you started if this is your first Flutter project:
+## ScreenShots
+![image](https://github.com/user-attachments/assets/59c08569-e1e9-4291-9bb7-bb9d201b9b1e)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+![image](https://github.com/user-attachments/assets/aef693b8-8618-4cd0-a225-571dd92dbbe8)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![image](https://github.com/user-attachments/assets/9b085456-7ae9-4f52-b488-770823b409b5)
+
+
