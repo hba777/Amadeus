@@ -1,14 +1,20 @@
+import 'dart:io';
+
 import 'package:chatbot_ai/repos/chat_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:chatbot_ai/models/chat_message_model.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-
+import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:image_picker/image_picker.dart';
 class ChatController extends GetxController {
   var messages = <ChatMessageModel>[].obs;
   ScrollController scrollController = ScrollController();
   FlutterTts flutterTts = FlutterTts();
   var generating = false.obs;
+  final gemini = Gemini.instance;
+  var image = Rxn<XFile>(); // Declare a reactive nullable XFile
+
 
   void addUserMessage(String message) {
     messages.add(ChatMessageModel(
@@ -41,6 +47,31 @@ class ChatController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', 'Failed to generate response');
     }
+  }
+
+  Future<void> textAndImage(String text, File file) async {
+    messages.add(ChatMessageModel(
+      role: 'user',
+      imagePath: file.path,
+      parts: [ChatPartModel(text: text)],
+    ));
+    _scrollToBottom();
+
+    generating.value = true;
+
+    gemini.textAndImage(text: text, images: [file.readAsBytesSync()])
+        .then((value){
+          String? message = value?.content?.parts?.last.text;
+          if(message != null){
+            messages.add(ChatMessageModel(role: 'model', parts: [
+              ChatPartModel(text: message)
+            ]));
+            generating.value = false;
+            _scrollToBottom();
+
+            _speakResponse(message);
+          }
+    });
   }
 
   Future<void> _speakResponse(String text) async {

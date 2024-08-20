@@ -13,7 +13,7 @@ class GetHomeScreen extends StatelessWidget {
   late TextEditingController promptController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   XFile? selectedImage;
-
+  List<String> images = [];
   GetHomeScreen({super.key});
 
   @override
@@ -36,6 +36,7 @@ class GetHomeScreen extends StatelessWidget {
             child: InkWell(
               onTap: () async {
                 selectedImage = await _picker.pickImage(source: ImageSource.gallery);
+                chatController.image.value = selectedImage;
               },
               child: const Icon(Icons.image_search, color: Colors.white),
             ),
@@ -82,7 +83,7 @@ class GetHomeScreen extends StatelessWidget {
                               SizedBox(width: mq.width * .02),
                               Expanded(
                                 child: Text(
-                                  chatController.messages[index].parts.first.text!,
+                                  chatController.messages[index].parts.first.text,
                                   style: const TextStyle(color: Colors.white),
                                   softWrap: true,
                                   overflow: TextOverflow.visible,
@@ -97,7 +98,31 @@ class GetHomeScreen extends StatelessWidget {
                       padding: EdgeInsets.symmetric(horizontal: mq.width * .02),
                       child: Align(
                         alignment: alignment,
-                        child: Container(
+                        child: chatController.messages[index].imagePath != null  ?
+                            Column(
+                              children: [
+                                SizedBox(
+                                  height: 100,
+                                  width: 100,
+                                  child: Image.file(File(chatController.messages[index].imagePath!)),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.symmetric(vertical: mq.height * .005),
+                                  padding: EdgeInsets.all(mq.width * .03),
+                                  constraints: BoxConstraints(maxWidth: mq.width * .6),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(mq.width * .04),
+                                    color: Colors.grey[700],
+                                  ),
+                                  child: Text(
+                                    chatController.messages[index].parts.first.text,
+                                    style: const TextStyle(color: Colors.white),
+                                    softWrap: true,
+                                    overflow: TextOverflow.visible,
+                                  ),
+                                ),
+                              ],
+                            ) : Container(
                           margin: EdgeInsets.symmetric(vertical: mq.height * .005),
                           padding: EdgeInsets.all(mq.width * .03),
                           constraints: BoxConstraints(maxWidth: mq.width * .6),
@@ -130,58 +155,85 @@ class GetHomeScreen extends StatelessWidget {
               }
             }),
 
-            //TextField
+            //TextField and Image
             Container(
               padding: EdgeInsets.symmetric(horizontal: mq.width * .02),
-              height: mq.height * .09,
               decoration: BoxDecoration(
                 color: Colors.grey[900],
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      cursorColor: Colors.white,
-                      style: const TextStyle(color: Colors.white),
-                      controller: promptController,
-                      decoration: InputDecoration(
-                        hintText: 'Type a message...',
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: mq.width * .05,
-                          vertical: mq.height * .02,
+              child: IntrinsicHeight(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Obx(() {
+                      return chatController.image.value != null
+                          ? Align(
+                        alignment: Alignment.centerRight,
+                        child: Container(
+                          height: 100,
+                          width: 100,
+                          child: Image.file(File(chatController.image.value!.path)),
                         ),
-                        filled: true,
-                        fillColor: Colors.grey,
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.circular(mq.width * .1),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: mq.width * .015),
-                  CircleAvatar(
-                    radius: mq.width * .07,
-                    backgroundColor: Colors.grey[900],
-                    child: CircleAvatar(
-                      radius: mq.width * .065,
-                      backgroundColor: Colors.grey[800],
-                      child: IconButton(
-                        onPressed: () {
-                          if (promptController.text.isNotEmpty) {
-                            String message = promptController.text;
-                            chatController.addUserMessage(message);
-                            promptController.clear();
-                          }
-                        },
-                        icon: const Icon(Icons.send, color: Colors.white),
-                      ),
+                      )
+                          : SizedBox.shrink();
+                    }),
 
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            cursorColor: Colors.white,
+                            style: const TextStyle(color: Colors.white),
+                            controller: promptController,
+                            decoration: InputDecoration(
+                              hintText: 'Type a message...',
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: mq.width * .05,
+                                vertical: mq.height * .02,
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(mq.width * .1),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: mq.width * .015),
+                        CircleAvatar(
+                          radius: mq.width * .07,
+                          backgroundColor: Colors.grey[900],
+                          child: CircleAvatar(
+                            radius: mq.width * .065,
+                            backgroundColor: Colors.grey[800],
+                            child: IconButton(
+                              onPressed: () {
+                                if (promptController.text.isNotEmpty) {
+                                  String message = promptController.text;
+
+                                  if (chatController.image.value != null) {
+                                    final file = File(chatController.image.value!.path);
+
+                                    chatController.textAndImage(message, file);
+                                    chatController.image.value = null;
+                                  } else {
+                                    chatController.addUserMessage(message);
+                                  }
+                                  promptController.clear();
+                                }
+                              },
+                              icon: const Icon(Icons.send, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+            )
+
           ],
         ),
       ),

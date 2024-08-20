@@ -1,10 +1,13 @@
 import 'package:chatbot_ai/main.dart';
 import 'package:chatbot_ai/screens/get_home_screen.dart';
 import 'package:chatbot_ai/screens/home_screen.dart';
+import 'package:chatbot_ai/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:flutter_gemini/flutter_gemini.dart';
 void main() {
+  Gemini.init(apiKey: apiKey);
+
   runApp(const MyApp());
 }
 

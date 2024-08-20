@@ -4,8 +4,13 @@ import 'dart:convert';
 class ChatMessageModel {
   final String role;
   final List<ChatPartModel> parts;
+  final String? imagePath; // Allow null if no image is associated
 
-  ChatMessageModel({required this.role, required this.parts});
+  ChatMessageModel({
+    this.imagePath,
+    required this.role,
+    required this.parts,
+  });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -18,8 +23,8 @@ class ChatMessageModel {
     return ChatMessageModel(
       role: map['role'] as String,
       parts: List<ChatPartModel>.from(
-        (map['parts'] as List<int>).map<ChatPartModel>(
-          (x) => ChatPartModel.fromMap(x as Map<String, dynamic>),
+        (map['parts'] as List<dynamic>).map<ChatPartModel>(
+              (x) => ChatPartModel.fromMap(x as Map<String, dynamic>),
         ),
       ),
     );
