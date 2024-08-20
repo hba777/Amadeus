@@ -41,7 +41,7 @@ class ChatController extends GetxController {
         _scrollToBottom();
 
         //Remove this for Text To Speech
-        await _speakResponse(generatedText);
+        // await _speakResponse(generatedText);
 
       }
     } catch (e) {
@@ -63,13 +63,14 @@ class ChatController extends GetxController {
         .then((value){
           String? message = value?.content?.parts?.last.text;
           if(message != null){
+            message.replaceAll(RegExp(r'[^\w\s]'), '').trim();
             messages.add(ChatMessageModel(role: 'model', parts: [
               ChatPartModel(text: message)
             ]));
             generating.value = false;
             _scrollToBottom();
 
-            _speakResponse(message);
+            // _speakResponse(message);
           }
     });
   }
