@@ -63,7 +63,7 @@ class ChatController extends GetxController {
         .then((value){
           String? message = value?.content?.parts?.last.text;
           if(message != null){
-            message.replaceAll(RegExp(r'[^\w\s]'), '').trim();
+            message = message.replaceAll(RegExp(r'[^\w\s]'), '').trim();
             messages.add(ChatMessageModel(role: 'model', parts: [
               ChatPartModel(text: message)
             ]));
